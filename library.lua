@@ -199,35 +199,43 @@ end
             return camera:WorldToViewportPoint(position)
         end 	
 
-        function library:unload()
-            library.gui:Destroy() 
+function library:unload()
+    if library.gui then
+        library.gui:Destroy()
+    end
 
-            for _, connection in library.connections do 
-                connection:Disconnect() 
-            end     
+    if library.connections then
+        for _, connection in pairs(library.connections) do 
+            connection:Disconnect() 
+        end     
+    end
 
-            for _, item in library.instances do 
-                item:Destroy()
-            end 
-
-            getgenv().library = nil
-        end
-
-        function library:convert_string_rgb(str)
-            local values = {}
-
-            for value in string.gmatch(str, "[^,]+") do
-                table.insert(values, tonumber(value))
-            end
-            
-            if #values == 4 then
-                local r, g, b, a = values[1], values[2], values[3], values[4]
-                
-                return r, g, b, a
-            else 
-                library:notification({text = "Input a correct RGBA value (in the format 255, 255, 255, 0.5)"})
-            end
+    if library.instances then
+        for _, item in pairs(library.instances) do 
+            item:Destroy()
         end 
+    end
+
+    getgenv().library = nil
+end
+
+function library:convert_string_rgb(str)
+    local values = {}
+
+    for value in string.gmatch(str, "[^,]+") do
+        table.insert(values, tonumber(value))
+    end
+    
+    if #values == 4 then
+        local r, g, b, a = values[1], values[2], values[3], values[4]
+        return r, g, b, a
+    else 
+        if library.notification then
+            library:notification({text = "Input a correct RGBA value (in the format 255, 255, 255, 0.5)"})
+        end
+    end
+end
+
 
         function library:connection(signal, callback)
             local connection = signal:Connect(callback)
