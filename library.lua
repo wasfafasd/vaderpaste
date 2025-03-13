@@ -36,7 +36,7 @@ local min = math.min
 local abs = math.abs 
 
 if getgenv().library then 
-    getgenv().library:unload()
+    return nil
 end 
 
 -- library init
